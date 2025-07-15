@@ -139,9 +139,9 @@ func (b *BTree[K, V]) TryRemove(key K) bool {
 	return false
 }
 
-func (b *BTree[K, V]) InorderTraverse() []*Item[K, V] {
+func (b *BTree[K, V]) InorderTraverse() []Item[K, V] {
 	if b.root == nil {
-		return []*Item[K, V]{}
+		return []Item[K, V]{}
 	}
 	return inorderTraverse(b.root)
 }
@@ -277,14 +277,17 @@ func (b *BTree[K, V]) merge(parent *node[K, V], childInd int) *node[K, V] {
 	return leftSibl
 }
 
-func inorderTraverse[K, V any](node *node[K, V]) []*Item[K, V] {
-	result := []*Item[K, V]{}
+func inorderTraverse[K, V any](node *node[K, V]) []Item[K, V] {
+	result := []Item[K, V]{}
 	if node.isLeaf() {
-		return node.items
+		for _, v := range node.items {
+			result = append(result, *v)
+		}
+		return result
 	}
 	for i, v := range node.items {
 		result = append(result, inorderTraverse(node.children[i])...)
-		result = append(result, v)
+		result = append(result, *v)
 	}
 	result = append(result, inorderTraverse(node.children[len(node.children)-1])...)
 

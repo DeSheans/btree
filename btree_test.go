@@ -352,7 +352,7 @@ func assert(t *testing.T, tree *BTree[int, int], expected, actual bool, expCount
 	}
 }
 
-func equal[K cmp.Ordered, V any](items []*Item[K, V], keys []K) bool {
+func equal[K cmp.Ordered, V any](items []Item[K, V], keys []K) bool {
 	if len(items) != len(keys) {
 		return false
 	}
