@@ -140,10 +140,11 @@ func (b *BTree[K, V]) TryRemove(key K) bool {
 }
 
 func (b *BTree[K, V]) InorderTraverse() []Item[K, V] {
+	res := make([]Item[K, V], 0, b.Count())
 	if b.root == nil {
-		return []Item[K, V]{}
+		return res
 	}
-	return inorderTraverse(b.root)
+	return inorderTraverse(res, b.root)
 }
 
 func (b *BTree[K, V]) remove(node, parent *node[K, V], childInd int, key K) bool {
@@ -277,21 +278,21 @@ func (b *BTree[K, V]) merge(parent *node[K, V], childInd int) *node[K, V] {
 	return leftSibl
 }
 
-func inorderTraverse[K, V any](node *node[K, V]) []Item[K, V] {
-	result := []Item[K, V]{}
+func inorderTraverse[K, V any](slice []Item[K, V], node *node[K, V]) []Item[K, V] {
+	if node == nil {
+		return slice
+	}
 	if node.isLeaf() {
 		for _, v := range node.items {
-			result = append(result, *v)
+			slice = append(slice, *v)
 		}
-		return result
+		return slice
 	}
 	for i, v := range node.items {
-		result = append(result, inorderTraverse(node.children[i])...)
-		result = append(result, *v)
+		slice = inorderTraverse(slice, node.children[i])
+		slice = append(slice, *v)
 	}
-	result = append(result, inorderTraverse(node.children[len(node.children)-1])...)
-
-	return result
+	return inorderTraverse(slice, node.children[len(node.children)-1])
 }
 
 func (b BTree[K, V]) min(node *node[K, V]) *Item[K, V] {
